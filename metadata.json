@@ -1,0 +1,9 @@
+{
+  "name": "FretWiz - Guitar to MIDI & AI Jam",
+  "description": "Real-time guitar-to-MIDI converter with an integrated Gemini AI musical companion.",
+  "requestFramePermissions": [
+    "microphone",
+    "midi"
+  ],
+  "majorCapabilities": []
+}
