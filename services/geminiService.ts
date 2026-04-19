@@ -109,7 +109,7 @@ export class GeminiLiveService {
     `;
 
     const response = await this.ai.models.generateContent({
-      model: 'gemini-1.5-pro', // Pro for large context audio file analysis
+      model: 'gemini-3.1-pro-preview', // Pro for large context audio file analysis
       contents: {
         parts: [
           { inlineData: { mimeType: safeMime, data: base64Data } },

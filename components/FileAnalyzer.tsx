@@ -46,15 +46,10 @@ const FileAnalyzer: React.FC = () => {
   }, [file]);
 
   useEffect(() => {
-    let interval: any;
-    if (isAnalyzing) {
-      interval = setInterval(() => {
-        setAnalysisStep(prev => (prev + 1) % analysisSteps.length);
-      }, 5000);
-    } else {
+    // Reset step if not analyzing so it mounts clean next time
+    if (!isAnalyzing) {
       setAnalysisStep(0);
     }
-    return () => clearInterval(interval);
   }, [isAnalyzing]);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -120,9 +115,11 @@ const FileAnalyzer: React.FC = () => {
     if (!file) return;
 
     setIsAnalyzing(true);
+    setAnalysisStep(0);
     setResult(null);
 
     try {
+      // Step 1: Read File
       const base64String = await new Promise<string>((resolve, reject) => {
         const reader = new FileReader();
         reader.onload = () => resolve((reader.result as string).split(',')[1]);
@@ -130,16 +127,29 @@ const FileAnalyzer: React.FC = () => {
         reader.readAsDataURL(file);
       });
 
+      // Simulation of stepping through progress via interval
+      const activeInterval = setInterval(() => {
+        setAnalysisStep(prev => prev < analysisSteps.length - 1 ? prev + 1 : prev);
+      }, 5000);
+
+      // Call API
       const analysis = await geminiService.analyzeAudioFile(
         base64String,
         file.type,
         config
       );
-      setResult(analysis);
+      
+      clearInterval(activeInterval);
+      setAnalysisStep(analysisSteps.length - 1); // Finale
+      
+      setTimeout(() => {
+         setResult(analysis);
+         setIsAnalyzing(false);
+      }, 800); // 1 sec delay to see 100% complete bar
+
     } catch (err: any) {
       console.error(err);
       alert("Analysis failed: " + (err.message || "Please try a different file format."));
-    } finally {
       setIsAnalyzing(false);
     }
   };

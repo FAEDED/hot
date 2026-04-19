@@ -119,24 +119,48 @@ export const ScaleTheoryLab: React.FC<ScaleTheoryLabProps> = ({ initialRoot = 'E
                <h4 className="font-bold text-white mb-2">{technique} Drill in {rootNote} {scaleType}</h4>
                
                {technique === 'Sweep Picking' && (
-                 <p className="text-zinc-400 text-sm leading-relaxed mb-4">
-                   Practice 3-string triad ascents and descents targeting the root, 3rd, and 5th intervals. Make sure your pick slants correctly so you glide across the strings in a single continuous motion. Mute the strings behind your fretting hand.
-                 </p>
+                 <div className="space-y-4">
+                   <p className="text-zinc-400 text-sm leading-relaxed mb-4">
+                     Practice 3-string and 5-string triad ascents and descents targeting the root, 3rd, and 5th intervals of the <strong className="text-white">{rootNote} {scaleType.replace(/\b\w/g, l => l.toUpperCase())}</strong> scale. Make sure your pick slants correctly so you glide across the strings in a single continuous motion. Mute the strings behind your fretting hand.
+                   </p>
+                   <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+                     <h5 className="font-bold text-xs text-purple-400 mb-2">3-String Triad Arpeggios (Top Strings)</h5>
+                     <Fretboard rootNote={rootNote} scaleType={scaleType} fretStart={5} fretEnd={12} />
+                   </div>
+                 </div>
                )}
                {technique === 'Alternate Picking' && (
-                 <p className="text-zinc-400 text-sm leading-relaxed mb-4">
-                   Strict down-up-down-up mechanics sequence playing 3 notes per string traversing the scale vertically. Keep wrist movement minimal and rely on precise synchronization between hands. Use a metronome!
-                 </p>
+                 <div className="space-y-4">
+                   <p className="text-zinc-400 text-sm leading-relaxed mb-4">
+                     Strict down-up-down-up mechanics sequence playing 3 notes per string traversing the <strong className="text-white">{rootNote} {scaleType.replace(/\b\w/g, l => l.toUpperCase())}</strong> scale vertically. Keep wrist movement minimal and rely on precise synchronization between hands. Use a metronome starting at 80 BPM!
+                   </p>
+                   <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+                     <h5 className="font-bold text-xs text-green-400 mb-2">3-Note-Per-String Run (Mid Neck)</h5>
+                     <Fretboard rootNote={rootNote} scaleType={scaleType} fretStart={4} fretEnd={9} />
+                   </div>
+                 </div>
                )}
                {technique === 'Legato' && (
-                 <p className="text-zinc-400 text-sm leading-relaxed mb-4">
-                   Focus on hammer-ons and pull-offs to generate sound without picking. Target sequences of 4-6 notes. Ensure the volume of your fretted notes matches the volume of picked notes.
-                 </p>
+                 <div className="space-y-4">
+                   <p className="text-zinc-400 text-sm leading-relaxed mb-4">
+                     Focus on hammer-ons and pull-offs within the <strong className="text-white">{rootNote} {scaleType.replace(/\b\w/g, l => l.toUpperCase())}</strong> scale to generate sound without picking. Target sequences of 4-6 notes per string block. Ensure the volume of your fretted notes matches the volume of picked notes.
+                   </p>
+                   <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+                     <h5 className="font-bold text-xs text-blue-400 mb-2">Legato Trill Box (Upper Register)</h5>
+                     <Fretboard rootNote={rootNote} scaleType={scaleType} fretStart={9} fretEnd={15} />
+                   </div>
+                 </div>
                )}
                {technique === 'Djent Rhythm' && (
-                 <p className="text-zinc-400 text-sm leading-relaxed mb-4">
-                   Palm-mute the lowest string aggressively. Map the syncopated rhythm `0-0-0-0  0-0` against a 4/4 or odd-meter backing track. Let the higher dissonant intervals ring out to create tension.
-                 </p>
+                 <div className="space-y-4">
+                   <p className="text-zinc-400 text-sm leading-relaxed mb-4">
+                     Palm-mute the lowest string aggressively to chug the root note `<strong>{rootNote}</strong>`. Map the syncopated rhythm `0-0-0-0  0-0` against a 4/4 or odd-meter backing track. Let the higher dissonant intervals from the {scaleType} scale ring out to create tension.
+                   </p>
+                   <div className="bg-zinc-900 border border-zinc-800 rounded-lg p-4">
+                     <h5 className="font-bold text-xs text-red-500 mb-2">Dissonant Chord Intervals</h5>
+                     <Fretboard rootNote={rootNote} scaleType={scaleType} fretStart={0} fretEnd={5} />
+                   </div>
+                 </div>
                )}
 
                <div className="p-3 bg-zinc-900 border border-zinc-800 rounded-lg text-xs text-zinc-300 animate-pulse font-mono flex items-center justify-center min-h-[100px]">

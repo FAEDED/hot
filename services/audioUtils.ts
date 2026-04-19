@@ -93,8 +93,14 @@ export const autoCorrelate = (buf: Float32Array, sampleRate: number, minFreq?: n
   const b = (x3 - x1) / 2;
   
   if (a) T0 = T0 - b / (2 * a);
+  
+  const frequency = sampleRate / T0;
 
-  return sampleRate / T0;
+  // Strict structural filtering for instrument selected limits
+  if (minFreq && frequency < minFreq) return -1;
+  if (maxFreq && frequency > maxFreq) return -1;
+
+  return frequency;
 };
 
 // Base64 encoding helpers for audio streaming

@@ -535,13 +535,46 @@ const App: React.FC = () => {
             </div>
 
             {/* Stats & Chord Row */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
               {/* Detected Chord */}
               <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800 shadow-xl flex flex-col items-center justify-center relative overflow-hidden h-40">
                   <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none text-9xl">🎸</div>
                   <h3 className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-2 z-10">Detected Chord</h3>
                   <div className={`text-5xl font-black tracking-tighter z-10 transition-colors ${currentChord ? 'text-blue-400' : 'text-zinc-700'}`}>
                       {currentChord || "---"}
+                  </div>
+              </div>
+
+              {/* Musical Context Analyzer */}
+              <div className="bg-zinc-900 rounded-2xl p-4 border border-zinc-800 shadow-xl flex flex-col justify-between h-40">
+                  <div>
+                      <h3 className="text-zinc-400 text-[10px] font-bold uppercase tracking-widest mb-4">Musical Context</h3>
+                      <div className="space-y-3">
+                        {(() => {
+                            const rootMatch = currentChord?.match(/^[A-G][#b]?/);
+                            const root = rootMatch ? rootMatch[0] : (audioState.note ? audioState.note.replace(/[0-9]/g, '') : 'E');
+                            const isMinor = currentChord?.includes('m') && !currentChord?.includes('dim');
+                            // Simplified relative mappings for visual representation
+                            const relativeKey = isMinor ? `${root} Major (Relative)` : `${root} Minor (Relative)`; 
+                            
+                            return (
+                              <>
+                                <div className="flex justify-between items-center border-b border-zinc-800 pb-1.5">
+                                    <span className="text-zinc-500 text-xs text-nowrap mr-2">Key Center</span>
+                                    <span className="font-mono text-zinc-300 text-xs truncate max-w-[120px]">{root} {isMinor ? 'Minor' : 'Major'}</span>
+                                </div>
+                                <div className="flex justify-between items-center border-b border-zinc-800 pb-1.5">
+                                    <span className="text-zinc-500 text-xs text-nowrap mr-2">Relative</span>
+                                    <span className="font-mono text-zinc-300 text-xs truncate max-w-[120px]">{relativeKey}</span>
+                                </div>
+                                <div className="flex justify-between items-center border-zinc-800 pt-0.5">
+                                    <span className="text-zinc-500 text-xs text-nowrap mr-2">Dominant Mode</span>
+                                    <span className="font-mono text-cyan-400 text-xs truncate max-w-[120px]">{isMinor ? `${root} Aeolian` : `${root} Mixolydian`}</span>
+                                </div>
+                              </>
+                            );
+                        })()}
+                      </div>
                   </div>
               </div>
 
@@ -694,9 +727,10 @@ const App: React.FC = () => {
                   <div className="flex flex-col gap-1 w-1/3">
                      <label className="text-[10px] text-zinc-500 uppercase font-bold">Scale / Pattern</label>
                      <select 
-                       value={fretboardScale}
+                       disabled={fretboardAuto}
+                       value={fretboardAuto ? (currentChord?.includes('dim') ? 'diminished' : currentChord?.includes('m') ? 'minor' : currentChord ? 'major' : 'power chord') : fretboardScale}
                        onChange={(e) => setFretboardScale(e.target.value)}
-                       className="bg-zinc-950 border border-zinc-800 rounded p-1.5 text-xs text-white outline-none focus:border-indigo-500"
+                       className="bg-zinc-950 border border-zinc-800 rounded p-1.5 text-xs text-white outline-none focus:border-indigo-500 disabled:opacity-50"
                      >
                        <optgroup label="Scales">
                          <option value="major">Major Scale</option>
@@ -719,8 +753,36 @@ const App: React.FC = () => {
 
                <Fretboard 
                  rootNote={fretboardAuto ? (currentChord ? currentChord.replace(/[^A-G#b]/g, '') : (audioState.note ? audioState.note.replace(/[0-9]/g, '') : 'E')) : fretboardRoot} 
-                 scaleType={fretboardScale} 
+                 scaleType={fretboardAuto ? (currentChord?.includes('dim') ? 'diminished' : currentChord?.includes('m') ? 'minor' : currentChord ? 'major' : 'power chord') : fretboardScale} 
                />
+               
+               {fretboardAuto && isListening && (
+                 <div className="mt-4 border-t border-zinc-800 pt-4">
+                    <h4 className="text-zinc-400 text-xs font-bold uppercase tracking-widest mb-3 text-center">Suggested Scale Patterns</h4>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="bg-zinc-950 border border-zinc-800/50 rounded-lg p-3">
+                         <span className="text-[10px] uppercase font-bold text-indigo-400">Position 1 (Root)</span>
+                         <div className="mt-2 text-xs">
+                           <Fretboard 
+                             rootNote={currentChord ? currentChord.replace(/[^A-G#b]/g, '') : (audioState.note ? audioState.note.replace(/[0-9]/g, '') : 'E')} 
+                             scaleType={currentChord?.includes('dim') ? 'diminished' : currentChord?.includes('m') ? 'minor' : currentChord ? 'major' : 'power chord'} 
+                             fretStart={0} fretEnd={5}
+                           />
+                         </div>
+                      </div>
+                      <div className="bg-zinc-950 border border-zinc-800/50 rounded-lg p-3">
+                         <span className="text-[10px] uppercase font-bold text-purple-400">Position 2 (Upper)</span>
+                         <div className="mt-2 text-xs">
+                           <Fretboard 
+                             rootNote={currentChord ? currentChord.replace(/[^A-G#b]/g, '') : (audioState.note ? audioState.note.replace(/[0-9]/g, '') : 'E')} 
+                             scaleType={currentChord?.includes('dim') ? 'diminished' : currentChord?.includes('m') ? 'minor' : currentChord ? 'major' : 'power chord'} 
+                             fretStart={5} fretEnd={12}
+                           />
+                         </div>
+                      </div>
+                    </div>
+                 </div>
+               )}
                
             </div>
 
